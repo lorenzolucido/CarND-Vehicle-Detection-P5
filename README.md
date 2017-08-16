@@ -19,6 +19,7 @@ The goals / steps of this project are the following:
 [car_not_car]: ./car_not_car.png
 [hog_car]: ./hog_car.png
 [hog_non_car]: ./hog_non_car.png
+[YCrCb]: ./YCrCb_decomposition.png
 [sliding]: ./sliding-window.png
 [heating]: ./pipeline_heating.png
 [labeling]: ./pipeline_labeling.png
@@ -48,6 +49,9 @@ Here is an example using the `HLS` color space (L-Channel) and HOG parameters of
 ![alt text][hog_car]
 ![alt text][hog_non_car]
 
+After exploring various color spaces, I did end up choosing the 3 channels of `YCrCb` in order to train the classifier. This is what seemed to output the most relevant features in order to recognize a car:
+![alt text][YCrCb]
+
 #### Histogram of colors (`histCol`) and Spatial Binning (`spaBin`) features (sections 2b and 2c)
 
 As a way to further help the classifier, I also extracted [histogram of color](https://en.wikipedia.org/wiki/Color_histogram) and spatial binning features. Both have been implemented as sklearn pipeline `transformers`.
@@ -56,7 +60,7 @@ As a way to further help the classifier, I also extracted [histogram of color](h
 
 I then  standardized the 3 sets of features by passing them through a sklearn `StandardScaler`, and finally trained a **Linear SVM classifier** with all these features. The name of the full classification pipeline is `p_classify` in the notebook.
 In order to set the various parameters, I looked at my test set accuracy and tried to maximize it.
-I eventually obtained an accuracy of **99.0%** on the test set.
+I eventually obtained an accuracy of **99.4%** on the test set.
 
 _Note: The pipeline module could have been leveraged to run cross-validation on a parameter grid._
 
@@ -77,7 +81,7 @@ In order to improve the performance of the `SlidingWindowClassifier`, I had to m
 2. cache the Histogram of Gradients for remaining part of the big image and then re-use subset of those features for sub-images (see `SlidingWindowHOG` class in section 4.)
  just the sky!)
 3. run the `SlidingWindowClassifier` with multiple window sizes and make sure they do not overlap too much, as this would classifying a lot of images
-4. set the classifier probability threshold for keeping windows with cars much higher than 50% in order to avoid false positives (eventually set at 90%)
+4. set the classifier probability threshold for keeping windows with cars much higher than 50% in order to avoid false positives (eventually set at 75%)
 5. aggregate the output of the multiple `SlidingWindowClassifier` into a heatmap which sums the probabilities of multiple windows with a minimum threshold
 6. label the heated areas
 
